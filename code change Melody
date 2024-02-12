@@ -1,0 +1,72 @@
+#define BUZZER 27
+#define BUTTON 0
+hw_timer_t *My_timer = NULL; //set Timer object
+
+const int Melody[][2] = {
+  {0,50},
+  {524, 300}, // Note: C5
+  {524, 500}, // Note: C5
+  {0,15},
+  {659, 300}, // Note: E5
+  {786, 500}, // Note: G5
+  {0,50},
+  {786, 350}, // Note: G5
+  {786, 300}, // Note: G5
+  {880, 300}, // Note: A5
+  {988, 300}, // Note: B5
+  {1047, 300}, // Note: C6
+  {1175, 300}, // Note: D6
+  {1319, 750}, // Note: E6
+  {0,100},
+  {1319, 300}, // Note: E6
+  {1175, 300}, // Note: D6
+  {1047, 300}, // Note: C6
+  {786, 300}, // Note: G5
+  {880, 300}, // Note: A5
+  {988, 300}, // Note: B5
+  {1047, 300}, // Note: C6
+  {1319, 300}, // Note: E6
+  {1047, 300}, // Note: C6
+  {1175, 300}, // Note: D6
+  {1047, 300}, // Note: C6
+  {1047, 300}, // Note: C6
+  {0,75},
+  {1047, 150}, // Note: C6
+  {1047, 150}, // Note: C6
+  {1047, 500}, // Note: C6
+  {0,50},
+};
+
+int noteIndex = 0;
+int speedIndex = 2;
+int velocity[] = {1, 2, 3 , 4, 5};
+
+void IRAM_ATTR onTimer(){ // function that set in ram 
+  
+int frequency = Melody[noteIndex][0];
+  int duration = Melody[noteIndex][1];
+  int newduration = (duration/( velocity[speedIndex]));
+
+  tone(BUZZER, frequency, newduration);
+  noteIndex = (noteIndex + 1) % (sizeof(Melody) / sizeof(Melody[0])); // Move to the next note
+}
+void IRAM_ATTR onButtonPress() {
+  speedIndex = (speedIndex + 1) % 5; // Cycle through the speed levels
+}
+
+void setup(){
+  pinMode(BUZZER, OUTPUT);
+  pinMode(BUTTON, INPUT);
+  My_timer = timerBegin(0, 80, true);  // use tiemr 0 and set prescale to 80 so 1 tick is 1 uSec
+  timerAttachInterrupt(My_timer, &onTimer, true); // point to the ISR
+  timerAlarmWrite(My_timer, 400000, true);  // set alarm every 1 sec
+  timerAlarmEnable(My_timer);  // enable the alarm
+  attachInterrupt(digitalPinToInterrupt(BUTTON), onButtonPress, FALLING);
+}
+
+
+
+
+void loop() {  
+
+}
