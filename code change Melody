@@ -1,8 +1,8 @@
 #define BUZZER 27
-#define BUTTON 0
+#define BUTTON 0 //it is boot button
 hw_timer_t *My_timer = NULL; //set Timer object
 
-const int Melody[][2] = {
+const int Melody[][2] = { // Array เก็บความถี่และระยะเวลาของแต่ละตัวโน็ต
   {0,50},
   {524, 300}, // Note: C5
   {524, 500}, // Note: C5
@@ -41,7 +41,7 @@ int noteIndex = 0;
 int speedIndex = 2;
 int velocity[] = {1, 2, 3 , 4, 5};
 
-void IRAM_ATTR onTimer(){ // function that set in ram 
+void IRAM_ATTR onTimer(){ // ฟังก์ชั่นจัดการ Melody ให้เป็นเพลง
   
 int frequency = Melody[noteIndex][0];
   int duration = Melody[noteIndex][1];
@@ -50,11 +50,11 @@ int frequency = Melody[noteIndex][0];
   tone(BUZZER, frequency, newduration);
   noteIndex = (noteIndex + 1) % (sizeof(Melody) / sizeof(Melody[0])); // Move to the next note
 }
-void IRAM_ATTR onButtonPress() {
+void IRAM_ATTR onButtonPress() { //  ฟังก์ชั่นที่ทำการเปลี่ยนความเร็วของ Melody เมื่อปุ่มกด
   speedIndex = (speedIndex + 1) % 5; // Cycle through the speed levels
 }
 
-void setup(){
+void setup(){ 
   pinMode(BUZZER, OUTPUT);
   pinMode(BUTTON, INPUT);
   My_timer = timerBegin(0, 80, true);  // use tiemr 0 and set prescale to 80 so 1 tick is 1 uSec
